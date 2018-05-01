@@ -1,0 +1,10 @@
+﻿I'm sorry, but errors were detected in your script. Please correct the
+errors listed below, and try again.
+
+
+File "game/script.rpy", line 163: expected statement.
+    budget -= 500
+            ^
+
+Ren'Py Version: Ren'Py 6.99.14.3.3347
+Sun Apr 29 01:48:14 2018
