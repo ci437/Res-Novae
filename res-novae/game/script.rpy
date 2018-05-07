@@ -2,13 +2,13 @@
 init:
     $ count = 100
     $ budget = 5000
-    # define growth rate
     $ a = 0 #num of scenes
     $ scenes = ["virus", "volcano", "pollution", "breed", "research", "famine"]
     $ renpy.random.shuffle(scenes)
     $ current_img = "creature.png"
 
 label randomize:
+    $ count = int(count + (count * growth_rate))
     python:
         if scenes and a < 7:
             a += 1
@@ -63,9 +63,9 @@ screen environments:
     text "Tropical rainforest" xpos 0.85 ypos 0.59 xalign 0.5
     zorder 100
 screen mutations:
-    imagebutton idle "images/wings.png" hover "wings.png" xpos 0.2 ypos 0.3 action Function(renpy.jump, label="breed_wings")
-    imagebutton idle "images/tail.png" hover "tail.png" xpos 0.4 ypos 0.3 action Function(renpy.jump, label="breed_tail")
-    imagebutton idle "images/fangs.png" hover "fangs.png" xpos 0.6 ypos 0.3 action Function(renpy.jump, label="breed_fangs")
+    imagebutton idle "images/wings.png" hover "wings_hover.png" xpos 0.2 ypos 0.3 action Function(renpy.jump, label="breed_wings")
+    imagebutton idle "images/tail.png" hover "tail_hover.png" xpos 0.4 ypos 0.3 action Function(renpy.jump, label="breed_tail")
+    imagebutton idle "images/fangs.png" hover "fangs_hover.png" xpos 0.6 ypos 0.3 action Function(renpy.jump, label="breed_fangs")
     zorder 100
 
 label start:
@@ -81,26 +81,35 @@ label start:
 
     $ generate_species = renpy.random.randint(1,3)
     $ generate_diet = renpy.random.randint(1,3)
+    $ generate_temp = renpy.random.randint(1,2)
+    $ rank = renpy.random.randint(1,3)
     if generate_diet == 1:
         $ diet = "herbivorous"
+        $ rank = rank + 1
     elif generate_diet == 2:
         $ diet = "omnivorous"
+        $ rank = rank + 4
     else:
         $ diet = "carnivorous"
+        $ rank = rank + 7
+    if generate_temp == 1:
+        $ internal_temp = "warm-blooded"
+    else:
+        $ internal_temp = "cold-blooded"
 
     if generate_species == 1:
         show screen creature
-        "Your species is a land creature. It is %(diet)s."
+        "Your species is a land creature. It is %(diet)s and %(internal_temp)s. Your rank is %(rank)s."
         $ species = "land"
 
     elif generate_species == 2:
         show screen creature
-        "Your species is a water creature. It is %(diet)s."
+        "Your species is a water creature. It is %(diet)s %(internal_temp)s. Your rank is %(rank)s."
         $ species = "water"
 
     else:
         show screen creature
-        "Your species is an air creature. It is %(diet)s."
+        "Your species is an air creature. It is %(diet)s %(internal_temp)s. Your rank is %(rank)s."
         $ species = "air"
 
 
@@ -135,8 +144,14 @@ label start:
     with dissolve
 
     "Where would you like to place your %(species_name)s?"
+label forest:
 
-label tundra:
+    # mild = -1
+    if internal_temp == "warm-blooded": #if creature is warm-blooded
+        $ growth_rate = 0.05
+    else:
+        $ growth_rate = 0.10
+    $ count = int(count + (count * growth_rate))
 
     hide screen environments
     hide screen mutations
@@ -145,8 +160,8 @@ label tundra:
     else:
         pass
 
-    $ location = "tundra"
-    scene tundra
+    $ location = "forest"
+    scene forest
     with fade
     show screen count
     show screen money
@@ -154,45 +169,21 @@ label tundra:
     show screen creature
 
     if species == "land":
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     elif species == "water":
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     else:
-        $ count += int(count + (count * 0.20))
-        "u have %(species)s."
-    jump randomize
-
-label rainforest:
-
-    hide screen environments
-    hide screen mutations
-    if count <= 0:
-      jump dead
-    else:
-        pass
-
-    $ location = "rainforest"
-    scene rainforest
-    with fade
-    show screen count
-    show screen money
-    stop music
-    show screen creature
-
-    if species == "land":
-        $ count += int(count + (count * 0.20))
-        "u have %(species)s."
-    elif species == "water":
-        $ count += int(count + (count * 0.20))
-        "u have %(species)s."
-    else:
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     jump randomize
 
 label desert:
+
+    # dry = 1
+    if internal_temp == "warm-blooded": #if creature is warm-blooded
+        $ growth_rate = 0.10
+    else:
+        $ growth_rate = 0.05
+    $ count = int(count + (count * growth_rate))
 
     hide screen environments
     hide screen mutations
@@ -211,18 +202,22 @@ label desert:
     show screen creature
 
     if species == "land":
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     elif species == "water":
-        $ count += int(count + (count * 0.20))
         "u have %(species)s. U DEAD ALREADY."
     else:
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     jump randomize
 
-label forest:
+label tundra:
 
+    # polar = 1
+    if internal_temp == "warm-blooded": #if creature is warm-blooded
+        $ growth_rate = 0.10
+    else:
+        $ growth_rate = 0.05
+
+    $ count = int(count + (count * growth_rate))
     hide screen environments
     hide screen mutations
     if count <= 0:
@@ -230,8 +225,8 @@ label forest:
     else:
         pass
 
-    $ location = "forest"
-    scene forest
+    $ location = "tundra"
+    scene tundra
     with fade
     show screen count
     show screen money
@@ -239,13 +234,42 @@ label forest:
     show screen creature
 
     if species == "land":
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     elif species == "water":
-        $ count += int(count + (count * 0.20))
         "u have %(species)s."
     else:
-        $ count += int(count + (count * 0.20))
+        "u have %(species)s."
+    jump randomize
+
+label rainforest:
+
+    # tropical = -1
+    if internal_temp == "warm-blooded": #if creature is warm-blooded
+        $ growth_rate = 0.05
+    else:
+        $ growth_rate = 0.10
+
+    $ count = int(count + (count * growth_rate))
+    hide screen environments
+    hide screen mutations
+    if count <= 0:
+      jump dead
+    else:
+        pass
+
+    $ location = "rainforest"
+    scene rainforest
+    with fade
+    show screen count
+    show screen money
+    stop music
+    show screen creature
+
+    if species == "land":
+        "u have %(species)s."
+    elif species == "water":
+        "u have %(species)s."
+    else:
         "u have %(species)s."
     jump randomize
 
@@ -312,7 +336,7 @@ label virus_research:
 
 label volcano:
 
-    $ renpy.notify('- ' + str(int(count * 0.10)))
+    #$ renpy.notify('- ' + str(int(count * 0.10)))
     $ count = int(count - (count * 0.10))
     hide screen mutations
     if count <= 0:
@@ -503,7 +527,7 @@ label famine:
             jump migrate
         "Wait it out.":
             "A new vegetation begins growing in the environment, eventually returning balance to the ecosystem."
-            $ renpy.notify('- ' + str(int(count * 0.50)))
+            # $ renpy.notify('- ' + str(int(count * 0.50)))
             $ count = int(count - (count * 0.50))
             "Your species has survived the famine, but just barely."
             jump randomize
@@ -581,7 +605,7 @@ label research_result:
 
         "Great work! You discovered that this new specimen has incredible healing powers for your species."
 
-        "You"
+        "Thanks to your research initiatives, your %(species_name)s grow in number."
 
         jump randomize
 
