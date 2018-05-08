@@ -182,6 +182,7 @@ label forest:
     show screen count
     show screen money
     stop music
+    play music "forest.mp3"
     show screen creature
 
     "You moved to the forest! Let's see how your species fares in these conditions..."
@@ -215,7 +216,7 @@ label desert:
     show screen count
     show screen money
     stop music
-    play music "BumblyMarch.mp3" fadeout 1.0 fadein 1.0
+    play music "desert.mp3"
     show screen creature
 
     "You moved to the desert! Let's see how your species fares in these conditions..."
@@ -248,6 +249,7 @@ label tundra:
     show screen count
     show screen money
     stop music
+    play music "tundra.mp3"
     show screen creature
 
     "You moved to the tundra! Let's see how your species fares in these conditions..."
@@ -280,6 +282,7 @@ label rainforest:
     show screen count
     show screen money
     stop music
+    play music "rainforest.mp3"
     show screen creature
 
     "You moved to the rainforest! Let's see how your species fares in these conditions..."
@@ -369,6 +372,7 @@ label volcano:
         pass
 
     stop music
+    play music "Descent.mp3" fadeout 1.0 fadein 1.0
     scene volcano
 
     "Bad news! A volcano erupted a short distance away from your ecosystem."
@@ -415,7 +419,8 @@ label pollution:
     $ count = int(count - (count * 0.12))
 
     scene pollution
-    play music "Hitman.mp3" fadeout 1.0 fadein 1.0
+    stop music
+    play music "DarkestChild.mp3" fadeout 1.0 fadein 1.0
     hide screen creature
     show screen creature_sad
     show screen count
@@ -487,6 +492,8 @@ label breed:
         pass
 
     scene breeding
+    stop music
+    play music "FrostWaltz.mp3" fadeout 1.0 fadein 1.0
 
     "It's mating season!"
 
@@ -547,6 +554,8 @@ label famine:
 
     hide screen mutations
     scene famine
+    stop music
+    play music "TellerofTales.mp3" fadeout 1.0 fadein 1.0
     hide screen creature
     show screen creature_sad
     show screen count
@@ -582,6 +591,8 @@ label famine:
 label famine_research:
 
     scene research
+    stop music
+    play music "Arcadia.mp3" fadeout 1.0 fadein 1.0
 
     $ famine_result = renpy.random.randint(1,10)
     if famine_result >3:
@@ -654,6 +665,9 @@ label research:
 
 label research_result:
 
+    stop music
+    play music "Arcadia.mp3" fadeout 1.0 fadein 1.0
+
     $ research_result = renpy.random.randint(1,10)
 
     if research_result > 3:
@@ -709,6 +723,8 @@ label dead:
 
     scene end
     show screen creature_sad
+    stop music
+    play music "EndofEra.mp3" fadeout 1.0 fadein 1.0
 
     "Unfortunately, it looks like your species has died out."
 
