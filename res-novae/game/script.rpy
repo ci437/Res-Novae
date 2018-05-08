@@ -1,26 +1,40 @@
-﻿# @author Divya Polson
+# @author Divya Polson
 init:
     $ count = 100
-    $ budget = 5000
+    $ budget = 4500
     $ a = 0 #num of scenes
     $ scenes = ["virus", "volcano", "pollution", "breed", "research", "famine"]
     $ renpy.random.shuffle(scenes)
-    $ current_img = "creature.png"
+    $ location = "lab"
+    $ type = "normal"
+    #sprites
+    $ current_happy = ConditionSwitch(
+        "type == 'normal'", "images/creature.png",
+        "type == 'tail'", "images/tail.png",
+        "type == 'mini'", "images/mini.png",
+        "type == 'fangs'", "images/fangs.png")
+
+    $ current_sad = ConditionSwitch(
+        "type == 'normal'", "images/creature_sad.png",
+        "type == 'tail'", "images/tail_sad.png",
+        "type == 'mini'", "images/mini_sad.png",
+        "type == 'fangs'", "images/fangs_sad.png")
 
 label randomize:
     $ count = int(count + (count * growth_rate))
     python:
-        if scenes and a < 7:
+        if scenes and a < 6:
             a += 1
             renpy.jump(scenes.pop(0))
         else:
             renpy.jump("final")
 
+#creature info
 label traits:
     show screen creature
     show screen count
     show screen money
-    "{b}%(species_name)s{/b}: %(species)s creature that is %(diet)s."
+    "{b}%(species_name)s{/b}:\na %(diet)s, %(internal_temp)s land creature with a rank of %(rank)s. It currently lives in the %(location)s."
     return
 
 #definitions
@@ -42,9 +56,15 @@ label foraging:
 label mutation:
     "{b}Mutation{/b}: Departure from the parent type in one or more heritable characteristics, caused by a change in a gene or a chromosome."
     return
+label apex_predator:
+    "{b}Apex predator{/b}: Also known as an alpha predator or top predator, an apex predator is at the top of a food chain, with no natural predators."
+    return
 
+#stats, environments, and mutations
 screen creature:
-    add current_img xpos 0.81 ypos 0.03
+    add current_happy xpos 0.81 ypos 0.03
+screen creature_sad:
+    add current_sad xpos 0.81 ypos 0.03
 screen count:
      add "count.png" xpos 0.81 ypos 0.33
      text "{a=traits}[count] [species_name]{/a}" xpos 0.9 ypos 0.34 xalign 0.5
@@ -63,11 +83,12 @@ screen environments:
     text "Tropical rainforest" xpos 0.85 ypos 0.59 xalign 0.5
     zorder 100
 screen mutations:
-    imagebutton idle "images/wings.png" hover "wings_hover.png" xpos 0.2 ypos 0.3 action Function(renpy.jump, label="breed_wings")
-    imagebutton idle "images/tail.png" hover "tail_hover.png" xpos 0.4 ypos 0.3 action Function(renpy.jump, label="breed_tail")
+    imagebutton idle "images/tail.png" hover "tail_hover.png" xpos 0.2 ypos 0.3 action Function(renpy.jump, label="breed_tail")
+    imagebutton idle "images/mini.png" hover "mini_hover.png" xpos 0.4 ypos 0.3 action Function(renpy.jump, label="breed_mini")
     imagebutton idle "images/fangs.png" hover "fangs_hover.png" xpos 0.6 ypos 0.3 action Function(renpy.jump, label="breed_fangs")
     zorder 100
 
+#game begins here
 label start:
 
     scene lab
@@ -79,7 +100,6 @@ label start:
 
     "Your newest project involves populating a new planet, Luna. To start, you've grown an experimental species."
 
-    $ generate_species = renpy.random.randint(1,3)
     $ generate_diet = renpy.random.randint(1,3)
     $ generate_temp = renpy.random.randint(1,2)
     $ rank = renpy.random.randint(1,3)
@@ -97,21 +117,12 @@ label start:
     else:
         $ internal_temp = "cold-blooded"
 
-    if generate_species == 1:
-        show screen creature
-        "Your species is a land creature. It is %(diet)s and %(internal_temp)s. Your rank is %(rank)s."
-        $ species = "land"
+    show screen creature
+    "Your species is a land creature that is %(diet)s and %(internal_temp)s."
 
-    elif generate_species == 2:
-        show screen creature
-        "Your species is a water creature. It is %(diet)s %(internal_temp)s. Your rank is %(rank)s."
-        $ species = "water"
+    "Your rank is %(rank)s. Your rank represents where you stand on the food chain on a scale of 1 to 10."
 
-    else:
-        show screen creature
-        "Your species is an air creature. It is %(diet)s %(internal_temp)s. Your rank is %(rank)s."
-        $ species = "air"
-
+    "For example, {a=apex_predator}apex predators{/a} will have the highest rank (10) while plants and vegetation are at the bottom of the food chain (1)."
 
     $ species_name = renpy.input("What would you like to name your new species?")
 
@@ -132,7 +143,7 @@ label start:
     "Spend them wisely!"
 
     "First order of business: your species needs somewhere to live.
-    Try to pick somewhere that best fits the traits of your species."
+    Try to pick an environment that suits the traits of your species."
 
     scene env
 
@@ -143,19 +154,24 @@ label start:
     show screen environments
     with dissolve
 
-    "Where would you like to place your %(species_name)s?"
+    "Where would you like to place your %(species_name)s?\nRemember: your species is %(diet)s and %(internal_temp)s with a rank of %(rank)s."
 label forest:
 
+    #black bear (8), fox (6), falcon (4)
+    #avg = 6
+
     # mild = -1
-    if internal_temp == "warm-blooded": #if creature is warm-blooded
-        $ growth_rate = 0.05
-    else:
+    if internal_temp == "cold-blooded" and rank < 6: #optimal condition
         $ growth_rate = 0.10
+    if internal_temp == "cold-blooded" or rank > 6: #second-best condition
+        $ growth_rate = 0.08
+    else:
+        $ growth_rate = 0.05
     $ count = int(count + (count * growth_rate))
 
     hide screen environments
     hide screen mutations
-    if count <= 0:
+    if count <= 0 or budget < 0:
       jump dead
     else:
         pass
@@ -168,19 +184,20 @@ label forest:
     stop music
     show screen creature
 
-    if species == "land":
-        "u have %(species)s."
-    elif species == "water":
-        "u have %(species)s."
-    else:
-        "u have %(species)s."
+    "You moved to the forest! Let's see how your species fares in these conditions..."
+
     jump randomize
 
 label desert:
 
+    #hawk (5), scorpion (3), beetle (2)
+    #avg: 3.34
+
     # dry = 1
-    if internal_temp == "warm-blooded": #if creature is warm-blooded
+    if internal_temp == "warm-blooded" and rank > 3:
         $ growth_rate = 0.10
+    elif internal_temp == "warm-blooded" or rank > 3:
+        $ growth_rate = 0.08
     else:
         $ growth_rate = 0.05
     $ count = int(count + (count * growth_rate))
@@ -201,19 +218,19 @@ label desert:
     play music "BumblyMarch.mp3" fadeout 1.0 fadein 1.0
     show screen creature
 
-    if species == "land":
-        "u have %(species)s."
-    elif species == "water":
-        "u have %(species)s. U DEAD ALREADY."
-    else:
-        "u have %(species)s."
+    "You moved to the desert! Let's see how your species fares in these conditions..."
     jump randomize
 
 label tundra:
 
+    #arctic wolf (7), wolf (5), arctic hare (3)
+    #avg: 5
+
     # polar = 1
-    if internal_temp == "warm-blooded": #if creature is warm-blooded
+    if internal_temp == "warm-blooded" and rank > 5:
         $ growth_rate = 0.10
+    elif internal_temp == "warm-blooded" or rank > 5:
+        $ growth_rate = 0.08
     else:
         $ growth_rate = 0.05
 
@@ -233,21 +250,21 @@ label tundra:
     stop music
     show screen creature
 
-    if species == "land":
-        "u have %(species)s."
-    elif species == "water":
-        "u have %(species)s."
-    else:
-        "u have %(species)s."
+    "You moved to the tundra! Let's see how your species fares in these conditions..."
     jump randomize
 
 label rainforest:
 
+    #jaguar (9), chimpanzee (5), frog (2)
+    #avg: 5.33
+
     # tropical = -1
-    if internal_temp == "warm-blooded": #if creature is warm-blooded
-        $ growth_rate = 0.05
-    else:
+    if internal_temp == "cold-blooded" and rank > 5:
         $ growth_rate = 0.10
+    elif internal_temp == "cold-blooded" or rank > 5:
+        $ growth_rate = 0.08
+    else:
+        $ growth_rate = 0.05
 
     $ count = int(count + (count * growth_rate))
     hide screen environments
@@ -265,15 +282,13 @@ label rainforest:
     stop music
     show screen creature
 
-    if species == "land":
-        "u have %(species)s."
-    elif species == "water":
-        "u have %(species)s."
-    else:
-        "u have %(species)s."
+    "You moved to the rainforest! Let's see how your species fares in these conditions..."
     jump randomize
 
 label virus:
+
+    hide screen creature
+    show screen creature_sad
 
     hide screen mutations
     $ count = int(count - (count * 0.40))
@@ -294,15 +309,19 @@ label virus:
     menu:
 
         "Research the virus ($1000).":
+            $ budget -= 1000
             $ renpy.notify('- 1000 coins')
             jump virus_research
-        "Migrate species. ($500)":
-            $ renpy.notify('- 500 coins')
+        "Migrate species. ($1000)":
+            $ renpy.notify('- 1000 coins')
             jump migrate
         "Do nothing.":
             pass
 
     $ count = int(count - (count * 0.10))
+
+    hide screen creature
+    show screen creature
 
     "Interesting...not as many organisms are dying..."
 
@@ -318,6 +337,9 @@ label virus_research:
 
     $ virus_result = renpy.random.randint(1,10)
     if virus_result > 2:
+
+        hide screen creature
+        show screen creature
 
         "Congratulations, your research team developed a cure!"
 
@@ -336,7 +358,9 @@ label virus_research:
 
 label volcano:
 
-    #$ renpy.notify('- ' + str(int(count * 0.10)))
+    hide screen creature
+    show screen creature_sad
+
     $ count = int(count - (count * 0.10))
     hide screen mutations
     if count <= 0:
@@ -357,7 +381,8 @@ label volcano:
         "Send out a medical rescue team. ($700).":
             $ budget -= 700
             jump volcano_rescue
-        "Migrate species. ($500).":
+        "Migrate species. ($1000).":
+            $ renpy.notify('- 1000 coins')
             jump migrate
         "Do nothing.":
             pass
@@ -371,8 +396,10 @@ label volcano:
 label volcano_rescue:
 
     $ renpy.notify('- $700')
-    #$ renpy.notify('- ' + str(int(count * 0.05)))
     $ count = int(count - (count * 0.05))
+
+    hide screen creature
+    show screen creature
 
     "Good work! The medical rescue team heals some of the injured and minimizes losses."
     jump randomize
@@ -389,8 +416,8 @@ label pollution:
 
     scene pollution
     play music "Hitman.mp3" fadeout 1.0 fadein 1.0
-    $ current_img = "creature_sad.png"
-    show screen creature
+    hide screen creature
+    show screen creature_sad
     show screen count
 
     "Your lab is producing some pollution..."
@@ -405,20 +432,20 @@ label pollution:
             $ budget -= 1500
             $ renpy.notify('- 1500 coins')
             $ count = int(count + (count * 0.28))
+            hide screen creature
+            show screen creature
             "The renovations are a success and your collective {a=carbon_footprint}carbon footprint{/a} is lower than ever."
-            #$ renpy.notify('+ ' + str(int(count * 0.28)))
             jump randomize
 
-        "Organize a cleanup effort ($100).":
+        "Organize a cleanup effort ($600).":
 
-            $ budget -= 100
-            $ renpy.notify('- 100 coins')
+            $ budget -= 600
+            $ renpy.notify('- 600 coins')
             $ count = int(count - (count * 0.08))
             "The cleanup event helped clear up some of the pollution, but wasn't a permanent solution."
             jump randomize
 
         "Do nothing.":
-            #$ renpy.notify('- ' + str(int(count * 0.17)))
             $ count = int(count - (count * 0.17))
             "Because of the lack of action, the %(species_name)s continue to suffer from the toxic fumes."
             jump randomize
@@ -432,24 +459,27 @@ label migrate:
         pass
 
     scene migration
+    show screen creature
     play music "BumblyMarch.mp3" fadeout 1.0 fadein 1.0
 
-    $ budget -= 500
+    $ budget -= 1000
     "Migration can be a good way to increase the {a=genetic_diversity}genetic diversity{/a} within a species."
 
     "Be aware that migration comes at a cost—not everyone will survive the long treks."
 
-    $ current_img = "creature_sad.png"
-    show screen creature
+    hide screen creature
+    hide screen creature_sad
     hide screen count
     hide screen money
 
     show screen environments
     with dissolve
 
-    "Where would you like to move?"
+    "Where would you like to move?\nRemember: your species is %(diet)s and %(internal_temp)s with a rank of %(rank)s."
 
 label breed:
+
+    show screen creature
 
     if count <= 0:
       jump dead
@@ -475,33 +505,50 @@ label breed:
 
     "Which mutation would you like to breed?"
 
-label breed_wings:
+label breed_tail:
 
     hide screen mutations
-    $ current_img = "wings.png"
-    "You chose to breed wings! This can be a useful trait that helps with {a=foraging}foraging{/a} and migration. But be warned, it takes a lot of energy to breed this trait."
+    $ type = "tail"
+    "You chose to breed a tail! This trait is particularly beneficial for species living in forests, as it helps with balance and movement, and can even act as another arm."
+    if location == "forest" or location == "rainforest":
+        $ growth_rate += 0.10
+    else:
+        pass
+    jump randomize
+
+label breed_mini:
+
+    hide screen mutations
+    $ type = "mini"
+    "You chose to breed mini %(species_name)s! A smaller size helps when hiding from predators and preserving energy."
+
+    if rank < 5:
+        $ growth_rate += 0.10
+    elif rank < 8:
+        $ growth_rate += 0.05
+    else:
+        pass
     jump randomize
 
 label breed_fangs:
 
     hide screen mutations
-    $ current_img = "fangs.png"
-    "You chose to breed fangs! This can an especially beneficial trait for carnivorous creatures, helping them more easily dig into their prey."
-    jump randomize
-
-label breed_tail:
-
-    hide screen mutations
-    $ current_img = "tail.png"
-    "You chose to breed a tail! This trait is particularly beneficial for species living in forests, as it helps with balance and movement, and can even act as another arm."
+    $ type = "fangs"
+    "You chose to breed fanged %(species_name)s! This can an especially beneficial trait for carnivorous creatures, helping them more easily dig into their prey."
+    if diet == "carnivorous":
+        $ growth_rate += 0.10
+    elif diet == "omnivorous":
+        $ growth_rate += 0.05
+    else:
+        pass
     jump randomize
 
 label famine:
 
     hide screen mutations
     scene famine
-    $ current_img = "creature_sad.png"
-    show screen creature
+    hide screen creature
+    show screen creature_sad
     show screen count
 
     if count <= 0:
@@ -523,11 +570,11 @@ label famine:
             $ budget -= 800
             $ renpy.notify('- 800 coins')
             jump famine_research
-        "Migrate ($500).":
+        "Migrate ($1000).":
+            $ renpy.notify('- 1000 coins')
             jump migrate
         "Wait it out.":
             "A new vegetation begins growing in the environment, eventually returning balance to the ecosystem."
-            # $ renpy.notify('- ' + str(int(count * 0.50)))
             $ count = int(count - (count * 0.50))
             "Your species has survived the famine, but just barely."
             jump randomize
@@ -538,6 +585,8 @@ label famine_research:
 
     $ famine_result = renpy.random.randint(1,10)
     if famine_result >3:
+
+        show screen creature
 
         "Congratulations! Your research was a success."
 
@@ -565,6 +614,8 @@ label famine_research:
 
 label research:
 
+    show screen creature
+
     hide screen mutations
     if count <= 0:
       jump dead
@@ -584,12 +635,18 @@ label research:
 
     menu:
 
-        "Research and test the specimen. ($450)":
+        "Research and test the specimen. ($500)":
+            $ budget -= 500
+            $ renpy.notify("- 500 coins")
             jump research_result
         "Do nothing.":
+            hide screen creature
+            show screen creature_sad
             pass
 
+
     "Little did you know, the plant was extremely poisonous and instantly fatal to your species."
+
 
     $ count = int(count - (count * 0.30))
 
@@ -613,6 +670,8 @@ label research_result:
 
         $ count = int(count - (count * 0.05))
 
+        show screen creature_sad
+
         "Unfortunately, you discover that the plant is extremely poisonous and instantly fatal to your species."
 
         "The good news is your research helped your team develop an antidote to counteract the effects."
@@ -620,6 +679,8 @@ label research_result:
         jump randomize
 
 label final:
+
+    show screen creature
 
     hide screen mutations
     if count <= 0:
@@ -634,15 +695,20 @@ label final:
 
     "Here are your stats so far: you've grown your %(species_name)s to %(count)s, and you have $%(budget)s left."
 
-    if count > 100:
-        "Great work!"
+    if count > 100 and budget >= 0:
+        "Great work! You grew your species and stayed under budget."
+    elif count > 100 and budget < 0:
+        "You grew your species, but didn't successfully stay under budget. Better luck next time!"
+    elif count < 100 and budget >= 0:
+        "Your %(species_name)s survived and you stayed within your budget, but you didn't successfully grow your species. Better luck next time!"
     else:
-        "Your %(species_name)s survived, but you didn't successfully grow your species. Better luck next time!"
+        "Your %(species_name)s survived, but you didn't successfully grow your species stay under your budget. Better luck next time!"
     return
 
 label dead:
 
     scene end
+    show screen creature_sad
 
     "Unfortunately, it looks like your species has died out."
 
