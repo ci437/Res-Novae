@@ -42,13 +42,13 @@ label genetic_diversity:
     "{b}Genetic Diversity{/b}: The total number of genetic characteristics in the genetic makeup of a species. Genetic diversity serves as a way for populations to adapt to changing environments. "
     return
 label keystone_species:
-    "{b}Keystone Species{/b}: A species that plays a critical role in maintaining the structure of an ecological community, affecting many other organisms in an ecosystem."
+    "{b}Keystone species{/b}: A species that plays a critical role in maintaining the structure of an ecological community, affecting many other organisms in an ecosystem."
     return
 label immunity:
     "{b}Immunity{/b}: An organism's ability to resist a particular infection or toxin by the action of specific antibodies or sensitized white blood cells."
     return
 label carbon_footprint:
-    "{b}Carbon Footprint{/b}: The total emissions caused by an individual, organization, or product, expressed as carbon dioxide equivalent."
+    "{b}Carbon footprint{/b}: The total emissions caused by an individual, organization, or product, expressed as carbon dioxide equivalent."
     return
 label foraging:
     "{b}Foraging{/b}: Searching for wild food resources. It affects an animal's fitness because it plays an important role in an animal's ability to survive and reproduce."
@@ -58,6 +58,9 @@ label mutation:
     return
 label apex_predator:
     "{b}Apex predator{/b}: Also known as an alpha predator or top predator, an apex predator is at the top of a food chain, with no natural predators."
+    return
+label gene_pool:
+    "{b}Gene pool{/b}: The stock of different genes in an interbreeding population."
     return
 
 #stats, environments, and mutations
@@ -501,7 +504,7 @@ label breed:
 
     "Some mutations can have negative effects, and can be dangerous for the survival of the species."
 
-    "Others can help increase the diversity of the gene pool and help evolve beneficial traits."
+    "Others can help increase the diversity of the {a=gene_pool}gene pool{/a} and help evolve beneficial traits."
 
     "You can choose whether or not you want to breed these mutations or let them die out naturally."
 
