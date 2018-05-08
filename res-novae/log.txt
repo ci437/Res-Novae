@@ -1,10 +1,10 @@
-Tue May  1 16:39:24 2018
+Mon May  7 20:26:10 2018
 Darwin-16.7.0-x86_64-i386-64bit
 Ren'Py 6.99.14.3.3347
  
 
 Bootstrap to the start of init.init took 0.08s
-Early init took 0.00s
+Early init took 0.01s
 Loader init took 0.02s
 Loading error handling took 0.03s
 Loading script took 0.13s
@@ -12,7 +12,7 @@ Loading save slot metadata. took 0.02s
 Loading persistent took 0.00s
 Importing _renpysteam: ImportError('No module named _renpysteam',)
 Running init code took 0.09s
-Loading analysis data took 0.04s
+Loading analysis data took 0.05s
 Analyze and compile ATL took 0.00s
 Index archives took 0.00s
 Dump and make backups. took 0.05s
@@ -20,11 +20,11 @@ Cleaning cache took 0.00s
 Making clean stores took 0.00s
 Initial gc. took 0.02s
 DPI scale factor: 1.000000
-Creating interface object took 0.19s
+Creating interface object took 0.17s
 Cleaning stores took 0.00s
-Init translation took 0.02s
-Build styles took 0.00s
-Load screen analysis took 0.02s
+Init translation took 0.03s
+Build styles took 0.01s
+Load screen analysis took 0.03s
 Analyze screens took 0.00s
 Save screen analysis took 0.00s
 Prepare screens took 0.07s
@@ -32,12 +32,12 @@ Save pyanalysis. took 0.00s
 Save bytecode. took 0.00s
 Running _start took 0.00s
 Performance test:
-Interface start took 0.02s
+Interface start took 0.03s
 
 primary display bounds: (0, 0, 1440, 900)
 swap interval: 1 frames
 Windowed mode.
-Screen sizes: virtual=(1280, 720) physical=(952, 536) drawable=(1904, 1072)
+Screen sizes: virtual=(1280, 720) physical=(926, 521) drawable=(1852, 1042)
 Vendor: 'Intel Inc.'
 Renderer: 'Intel Iris Pro OpenGL Engine'
 Version: '2.1 INTEL-10.25.17'
@@ -184,30 +184,16 @@ Texture testing:
 - 512px textures work.
 - 1024px textures work.
 - 2048px textures work.
-Total time until interface ready: 1.08236002922s
+Total time until interface ready: 1.10246610641s
 - Target is 5 frames in 0.333333333333 seconds.
 - Frame drawn at 0.000000 seconds.
-- Frame drawn at 0.017470 seconds.
-- Frame drawn at 0.028615 seconds.
-- Frame drawn at 0.049201 seconds.
-- Frame drawn at 0.061438 seconds.
-- 0.061438 seconds to render 5 frames.
-Cleaning stores took 0.00s
-Init translation took 0.13s
-Build styles took 0.01s
-Load screen analysis took 0.02s
-Analyze screens took 0.00s
-Prepare screens took 0.00s
-Running _start took 0.00s
+- Frame drawn at 0.017309 seconds.
+- Frame drawn at 0.030614 seconds.
+- Frame drawn at 0.046874 seconds.
+- Frame drawn at 0.063005 seconds.
+- 0.063005 seconds to render 5 frames.
 Cleaning stores took 0.00s
 Init translation took 0.14s
-Build styles took 0.01s
-Load screen analysis took 0.02s
-Analyze screens took 0.00s
-Prepare screens took 0.00s
-Running _start took 0.00s
-Cleaning stores took 0.00s
-Init translation took 0.15s
 Build styles took 0.01s
 Load screen analysis took 0.02s
 Analyze screens took 0.00s

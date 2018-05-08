@@ -2,9 +2,13 @@
 errors listed below, and try again.
 
 
-File "game/script.rpy", line 163: expected statement.
-    budget -= 500
-            ^
+File "game/script.rpy", line 64: u'image' is not a keyword argument or valid child for the add statement.
+    add image current_happy xpos 0.81 ypos 0.03
+             ^
+
+File "game/script.rpy", line 66: u'image' is not a keyword argument or valid child for the add statement.
+    add image current_sad xpos 0.81 ypos 0.03
+             ^
 
 Ren'Py Version: Ren'Py 6.99.14.3.3347
-Sun Apr 29 01:48:14 2018
+Mon May  7 19:28:47 2018
